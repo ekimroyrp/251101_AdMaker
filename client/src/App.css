@@ -127,51 +127,54 @@
 
 .selector-shell {
   position: relative;
-  border-radius: 1.25rem;
-  overflow: hidden;
-  border: 1px solid rgba(82, 82, 91, 0.35);
-  background: linear-gradient(140deg, rgba(12, 12, 15, 0.88), rgba(28, 28, 32, 0.65));
-  box-shadow: inset 0 0 0 1px rgba(82, 82, 91, 0.18);
-}
-
-.selector-shell select {
-  appearance: none;
-  width: 100%;
-  border: none;
-  background: linear-gradient(140deg, rgba(15, 15, 18, 0.95), rgba(32, 32, 36, 0.75));
-  color: rgba(241, 245, 249, 0.92);
-  padding: 0.95rem 3.5rem 0.95rem 1.25rem;
-  font-size: 1.05rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-}
-
-.selector-shell select:focus {
-  outline: none;
-  background: linear-gradient(140deg, rgba(22, 22, 26, 0.96), rgba(43, 43, 48, 0.78));
+  border-radius: 1.6rem;
+  overflow: visible;
+  border: 1px solid rgba(255, 100, 52, 0.28);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 100, 52, 0.1) 0%,
+    rgba(20, 20, 24, 0.72) 35%,
+    rgba(12, 12, 15, 0.52) 100%
+  );
   box-shadow:
-    inset 0 0 0 1px rgba(148, 163, 184, 0.4),
-    0 0 0 8px rgba(255, 94, 0, 0.16);
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 22px 45px rgba(6, 6, 10, 0.6);
+  backdrop-filter: blur(22px) saturate(140%);
 }
 
-.selector-shell select:hover {
-  color: #f8fafc;
-  background: linear-gradient(140deg, rgba(30, 30, 34, 0.96), rgba(255, 94, 0, 0.35));
-}
-
-.selector-shell::after {
+.selector-shell::before {
   content: '';
   position: absolute;
-  top: 50%;
-  right: 1.25rem;
-  width: 0.75rem;
-  height: 0.75rem;
-  border-bottom: 2px solid rgba(226, 232, 240, 0.65);
-  border-right: 2px solid rgba(226, 232, 240, 0.65);
-  transform: translateY(-50%) rotate(45deg);
+  inset: 0;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.12), transparent 60%);
   pointer-events: none;
+  z-index: 0;
+}
+
+.selector-trigger {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: rgba(248, 250, 252, 0.94);
+  padding: 1rem 3.75rem 1rem 1.35rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: 0.015em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+.selector-trigger:hover:not(:disabled) {
+  color: #ffffff;
+  background: linear-gradient(150deg, rgba(44, 44, 52, 0.4), rgba(255, 100, 52, 0.18));
+}
+
+.selector-trigger svg {
+  transition: transform 0.25s ease;
 }
 
 .selector-glow {
@@ -184,19 +187,103 @@
 }
 
 .selector-shell:focus-within .selector-glow,
-.selector-shell:hover .selector-glow {
+.selector-shell:hover .selector-glow,
+.selector-shell .selector-trigger:focus-visible ~ .selector-glow,
+.selector-shell.is-open .selector-glow {
   opacity: 1;
 }
 
-.selector-shell select option {
-  background-color: #0b0b0d;
-  color: #f3f4f6;
+.selector-trigger:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 0 0 8px rgba(255, 100, 52, 0.18);
 }
 
-.selector-shell select option:hover,
-.selector-shell select option:checked {
-  background-color: rgba(32, 32, 36, 0.92);
-  color: #fff5ef;
+.selector-trigger[aria-expanded='true'] svg {
+  transform: rotate(-180deg);
+}
+
+.selector-trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.selector-shell.is-open .selector-trigger {
+  color: #ffffff;
+  background: linear-gradient(150deg, rgba(44, 44, 52, 0.4), rgba(255, 100, 52, 0.18));
+}
+
+.selector-menu {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 0;
+  right: 0;
+  border-radius: 1.4rem;
+  padding: 0.45rem;
+  border: 1px solid rgba(255, 100, 52, 0.28);
+  background: linear-gradient(
+    155deg,
+    rgba(18, 18, 22, 0.92) 0%,
+    rgba(12, 12, 15, 0.88) 60%,
+    rgba(8, 8, 10, 0.82) 100%
+  );
+  box-shadow:
+    0 28px 55px rgba(6, 6, 10, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(18px) saturate(140%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 232px;
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 5;
+}
+
+.selector-menu.is-open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.selector-option button {
+  width: 100%;
+  border: none;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(248, 250, 252, 0.9);
+  padding: 0.85rem 1.1rem;
+  font-size: 0.98rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.selector-option button:hover,
+.selector-option button[aria-selected='true'] {
+  background: rgba(255, 100, 52, 0.18);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(255, 100, 52, 0.18);
+}
+
+.selector-menu::-webkit-scrollbar {
+  width: 0.45rem;
+}
+
+.selector-menu::-webkit-scrollbar-thumb {
+  background: rgba(255, 100, 52, 0.35);
+  border-radius: 999px;
+}
+
+.selector-menu::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .selector-footnote {
@@ -356,8 +443,13 @@
     border-radius: 1.5rem;
   }
 
-  .selector-shell select {
+  .selector-trigger {
     font-size: 1rem;
+    padding: 0.85rem 3.2rem 0.85rem 1rem;
+  }
+
+  .selector-menu {
+    max-height: 200px;
   }
 
   .primary-button,
