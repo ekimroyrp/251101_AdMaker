@@ -128,7 +128,7 @@
 .selector-shell {
   position: relative;
   border-radius: 1.6rem;
-  overflow: visible;
+  overflow: hidden;
   border: 1px solid rgba(255, 100, 52, 0.28);
   background: linear-gradient(
     145deg,
@@ -163,13 +163,17 @@
   z-index: 1;
 }
 
+.selector-shell.is-open {
+  overflow: visible;
+}
+
 .selector-trigger {
   width: 100%;
   border: none;
-  background: transparent;
-  border-radius: 1.35rem;
+  background: linear-gradient(145deg, rgba(20, 20, 24, 0.74), rgba(12, 12, 15, 0.52));
+  border-radius: calc(1.6rem - 6px);
   color: rgba(248, 250, 252, 0.94);
-  padding: 1rem 3.75rem 1rem 1.35rem;
+  padding: 1.05rem 3.75rem 1.05rem 1.4rem;
   font-size: 1.05rem;
   font-weight: 500;
   letter-spacing: 0.015em;
@@ -183,7 +187,7 @@
 
 .selector-trigger:hover:not(:disabled) {
   color: #ffffff;
-  background: linear-gradient(150deg, rgba(44, 44, 52, 0.4), rgba(255, 100, 52, 0.18));
+  background: linear-gradient(145deg, rgba(32, 32, 38, 0.6), rgba(255, 100, 52, 0.22));
 }
 
 .selector-trigger svg {
@@ -224,7 +228,7 @@
 
 .selector-shell.is-open .selector-trigger {
   color: #ffffff;
-  background: linear-gradient(150deg, rgba(44, 44, 52, 0.4), rgba(255, 100, 52, 0.18));
+  background: linear-gradient(145deg, rgba(34, 34, 42, 0.65), rgba(255, 100, 52, 0.26));
 }
 
 .selector-menu {
