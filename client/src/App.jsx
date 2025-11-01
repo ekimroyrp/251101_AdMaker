@@ -38,7 +38,7 @@ function App() {
     <div className="app-shell">
       <div className="glass-panel">
         <header className="panel-header">
-          <h1>Ad Agency</h1>
+          <h1>WIAMI AD AGENCY</h1>
         </header>
 
         <section className="preview-section">
