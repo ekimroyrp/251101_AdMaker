@@ -252,7 +252,7 @@ function App() {
 
           <div className="actions">
             <button type="submit" className="primary-button" disabled={isLoading}>
-              {isLoading ? 'Generating...' : 'Generate Image'}
+              {isLoading ? 'Generating...' : 'Generate Ad'}
             </button>
             <button type="button" className="secondary-button" onClick={handleReset} disabled={isLoading}>
               Reset
