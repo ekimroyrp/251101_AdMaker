@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import axios from 'axios'
 import './App.css'
 
 const RATIO_OPTIONS = [
@@ -14,8 +15,15 @@ const RATIO_OPTIONS = [
   { id: '1-1', label: '1 : 1', width: 1, height: 1 },
 ]
 
+const DEFAULT_PROMPT_HINT =
+  'Describe the subject, setting, mood, and visual style you want to explore.'
+
 function App() {
   const [selectedRatioId, setSelectedRatioId] = useState(RATIO_OPTIONS[0].id)
+  const [prompt, setPrompt] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const selectedRatio = useMemo(
     () => RATIO_OPTIONS.find((ratio) => ratio.id === selectedRatioId) ?? RATIO_OPTIONS[0],
@@ -34,6 +42,49 @@ function App() {
         ? 'Portrait orientation'
         : 'Perfect square'
 
+  const handleGenerate = async (event) => {
+    event.preventDefault()
+
+    if (!prompt.trim()) {
+      setError('Please add a few descriptive words for the scene you want to generate.')
+      return
+    }
+
+    setIsLoading(true)
+    setError('')
+    setImageUrl('')
+
+    try {
+      const response = await axios.post('/api/generate-image', {
+        prompt: prompt.trim(),
+        width: selectedRatio.width,
+        height: selectedRatio.height,
+        label: selectedRatio.label,
+      })
+
+      const url = response.data?.imageUrl
+      if (!url) {
+        throw new Error('The response did not include an image.')
+      }
+
+      setImageUrl(url)
+    } catch (err) {
+      const message =
+        err.response?.data?.error ??
+        err.message ??
+        'Something unexpected happened while generating the image.'
+      setError(message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleReset = () => {
+    setPrompt('')
+    setImageUrl('')
+    setError('')
+  }
+
   return (
     <div className="app-shell">
       <div className="glass-panel">
@@ -44,31 +95,67 @@ function App() {
         <section className="preview-section">
           <div className="ratio-preview" style={{ paddingTop: aspectPadding }}>
             <div className="ratio-preview__inner">
-              <span className="ratio-preview__label">{selectedRatio.label}</span>
+              {isLoading ? (
+                <div className="spinner" aria-live="polite" aria-label="Generating image" />
+              ) : imageUrl ? (
+                <img src={imageUrl} alt={`Generated concept for ${selectedRatio.label}`} />
+              ) : (
+                <span className="ratio-preview__label">{selectedRatio.label}</span>
+              )}
             </div>
           </div>
         </section>
 
-        <section className="selector-section">
-          <label className="selector-label" htmlFor="aspectRatioSelect">
-            Aspect ratio
-          </label>
-          <div className="selector-shell">
-            <select
-              id="aspectRatioSelect"
-              value={selectedRatioId}
-              onChange={(event) => setSelectedRatioId(event.target.value)}
-            >
-              {RATIO_OPTIONS.map((ratio) => (
-                <option key={ratio.id} value={ratio.id}>
-                  {ratio.label}
-                </option>
-              ))}
-            </select>
-            <div className="selector-glow" aria-hidden="true" />
+        <form className="control-panel" onSubmit={handleGenerate}>
+          <div className="selector-section">
+            <label className="selector-label" htmlFor="aspectRatioSelect">
+              Aspect ratio
+            </label>
+            <div className="selector-shell">
+              <select
+                id="aspectRatioSelect"
+                value={selectedRatioId}
+                onChange={(event) => setSelectedRatioId(event.target.value)}
+                disabled={isLoading}
+              >
+                {RATIO_OPTIONS.map((ratio) => (
+                  <option key={ratio.id} value={ratio.id}>
+                    {ratio.label}
+                  </option>
+                ))}
+              </select>
+              <div className="selector-glow" aria-hidden="true" />
+            </div>
+            <p className="selector-footnote">{ratioDescriptor}</p>
           </div>
-          <p className="selector-footnote">{ratioDescriptor}</p>
-        </section>
+
+          <div className="prompt-section">
+            <label className="selector-label" htmlFor="promptInput">
+              Prompt
+            </label>
+            <div className="prompt-shell">
+              <textarea
+                id="promptInput"
+                placeholder={DEFAULT_PROMPT_HINT}
+                value={prompt}
+                onChange={(event) => setPrompt(event.target.value)}
+                rows={4}
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+
+          {error && <p className="error-text">{error}</p>}
+
+          <div className="actions">
+            <button type="submit" className="primary-button" disabled={isLoading}>
+              {isLoading ? 'Generating…' : 'Generate Image'}
+            </button>
+            <button type="button" className="secondary-button" onClick={handleReset} disabled={isLoading}>
+              Reset
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   )
