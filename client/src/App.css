@@ -146,15 +146,28 @@
   content: '';
   position: absolute;
   inset: 0;
+  border-radius: inherit;
   background: linear-gradient(125deg, rgba(255, 255, 255, 0.12), transparent 60%);
   pointer-events: none;
   z-index: 0;
+}
+
+.selector-shell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 100, 52, 0.25);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .selector-trigger {
   width: 100%;
   border: none;
   background: transparent;
+  border-radius: 1.35rem;
   color: rgba(248, 250, 252, 0.94);
   padding: 1rem 3.75rem 1rem 1.35rem;
   font-size: 1.05rem;
