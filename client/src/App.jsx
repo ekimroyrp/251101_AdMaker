@@ -15,8 +15,7 @@ const RATIO_OPTIONS = [
   { id: '1-1', label: '1 : 1', width: 1, height: 1 },
 ]
 
-const DEFAULT_PROMPT_HINT =
-  'Describe the subject, setting, mood, and visual style you want to explore.'
+const DEFAULT_PROMPT_HINT = 'Describe the ad you want to generate...'
 
 function App() {
   const [selectedRatioId, setSelectedRatioId] = useState(RATIO_OPTIONS[0].id)
@@ -109,7 +108,7 @@ function App() {
         <form className="control-panel" onSubmit={handleGenerate}>
           <div className="selector-section">
             <label className="selector-label" htmlFor="aspectRatioSelect">
-              Aspect ratio
+              Ad Aspect
             </label>
             <div className="selector-shell">
               <select
@@ -131,7 +130,7 @@ function App() {
 
           <div className="prompt-section">
             <label className="selector-label" htmlFor="promptInput">
-              Prompt
+              Ad Prompt
             </label>
             <div className="prompt-shell">
               <textarea
