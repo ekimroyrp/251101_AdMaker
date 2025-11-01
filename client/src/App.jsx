@@ -17,6 +17,13 @@ const RATIO_OPTIONS = [
 
 const DEFAULT_PROMPT_HINT = 'Describe the ad you want to generate...'
 
+const slugify = (value) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60) || 'generated-ad'
+
 function App() {
   const [selectedRatioId, setSelectedRatioId] = useState(RATIO_OPTIONS[0].id)
   const [prompt, setPrompt] = useState('')
@@ -84,6 +91,22 @@ function App() {
     setError('')
   }
 
+  const trimmedPrompt = prompt.trim()
+  const downloadFileName = `${slugify(trimmedPrompt)}.png`
+
+  const handleDownload = () => {
+    if (!imageUrl) {
+      return
+    }
+
+    const link = document.createElement('a')
+    link.href = imageUrl
+    link.download = downloadFileName
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   return (
     <div className="app-shell">
       <div className="glass-panel">
@@ -148,11 +171,21 @@ function App() {
 
           <div className="actions">
             <button type="submit" className="primary-button" disabled={isLoading}>
-              {isLoading ? 'Generating…' : 'Generate Image'}
+              {isLoading ? 'Generating...' : 'Generate Image'}
             </button>
             <button type="button" className="secondary-button" onClick={handleReset} disabled={isLoading}>
               Reset
             </button>
+            {imageUrl && !isLoading && (
+              <button type="button" className="download-button" onClick={handleDownload}>
+                <span>Download</span>
+              </button>
+            )}
+            {imageUrl && !isLoading && (
+              <button type="button" className="mint-button">
+                <span>Mint</span>
+              </button>
+            )}
           </div>
         </form>
       </div>
