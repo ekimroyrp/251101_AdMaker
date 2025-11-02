@@ -24,12 +24,25 @@ const slugify = (value) =>
     .replace(/^-+|-+$/g, '')
     .slice(0, 60) || 'generated-ad'
 
+const ORIENTATION_OPTIONS = [
+  { id: 'landscape', label: 'Landscape' },
+  { id: 'portrait', label: 'Portrait' },
+]
+
+const formatDimension = (value) => {
+  if (Number.isInteger(value)) {
+    return value.toString()
+  }
+  return Number(value.toFixed(2)).toString()
+}
+
 function App() {
   const [selectedRatioId, setSelectedRatioId] = useState(RATIO_OPTIONS[0].id)
   const [prompt, setPrompt] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [orientation, setOrientation] = useState('landscape')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [lastPrompt, setLastPrompt] = useState('')
 
@@ -38,17 +51,30 @@ function App() {
     [selectedRatioId],
   )
 
-  const aspectPadding = useMemo(() => {
-    const ratio = selectedRatio.height / selectedRatio.width
-    return `${ratio * 100}%`
-  }, [selectedRatio])
+  const orientedDimensions = useMemo(() => {
+    const baseWidth = selectedRatio.width
+    const baseHeight = selectedRatio.height
+    if (orientation === 'portrait') {
+      return {
+        width: baseHeight,
+        height: baseWidth,
+      }
+    }
+    return {
+      width: baseWidth,
+      height: baseHeight,
+    }
+  }, [selectedRatio, orientation])
 
-  const ratioDescriptor =
-    selectedRatio.width > selectedRatio.height
-      ? 'Landscape orientation'
-      : selectedRatio.width < selectedRatio.height
-        ? 'Portrait orientation'
-        : 'Perfect square'
+  const orientedLabel = useMemo(
+    () => formatDimension(orientedDimensions.width) + ' : ' + formatDimension(orientedDimensions.height),
+    [orientedDimensions],
+  )
+
+  const aspectPadding = useMemo(() => {
+    const ratio = orientedDimensions.height / orientedDimensions.width
+    return `${ratio * 100}%`
+  }, [orientedDimensions])
 
   const handleGenerate = async (event) => {
     event.preventDefault()
@@ -67,9 +93,9 @@ function App() {
     try {
       const response = await axios.post('/api/generate-image', {
         prompt: requestPrompt,
-        width: selectedRatio.width,
-        height: selectedRatio.height,
-        label: selectedRatio.label,
+        width: orientedDimensions.width,
+        height: orientedDimensions.height,
+        label: orientedLabel,
       })
 
       const url = response.data?.imageUrl
@@ -158,9 +184,9 @@ function App() {
               {isLoading ? (
                 <div className="spinner" aria-live="polite" aria-label="Generating image" />
               ) : imageUrl ? (
-                <img src={imageUrl} alt={`Generated concept for ${selectedRatio.label}`} />
+                <img src={imageUrl} alt={`Generated concept for ${orientedLabel}`} />
               ) : (
-                <span className="ratio-preview__label">{selectedRatio.label}</span>
+                <span className="ratio-preview__label">{orientedLabel}</span>
               )}
             </div>
           </div>
@@ -186,7 +212,7 @@ function App() {
                 aria-expanded={isMenuOpen}
                 aria-controls="aspectRatioListbox"
               >
-                <span>{selectedRatio.label}</span>
+                <span>{orientedLabel}</span>
                 <svg
                   className="selector-arrow"
                   viewBox="0 0 24 24"
@@ -229,7 +255,28 @@ function App() {
                 ))}
               </ul>
             </div>
-            <p className="selector-footnote">{ratioDescriptor}</p>
+            <div className="orientation-toggle" role="radiogroup" aria-label="Orientation">
+              {ORIENTATION_OPTIONS.map((option) => {
+                const isActive = orientation === option.id
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={isActive}
+                    className={`orientation-option ${isActive ? 'is-active' : ''}`}
+                    onClick={() => {
+                      if (!isLoading) {
+                        setOrientation(option.id)
+                      }
+                    }}
+                    disabled={isLoading}
+                  >
+                    {option.label}
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
           <div className="prompt-section">
@@ -275,3 +322,7 @@ function App() {
 }
 
 export default App
+
+
+
+

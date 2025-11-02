@@ -519,11 +519,43 @@
 
 
 
+.orientation-toggle {
+  display: flex;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
 
+.orientation-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 1.05rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 100, 52, 0.55);
+  background: linear-gradient(90deg, rgba(36, 41, 56, 0.5), rgba(6, 8, 14, 0.5));
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
 
+.orientation-option:not(.is-active):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(255, 100, 52, 0.2);
+}
 
+.orientation-option.is-active {
+  background: linear-gradient(135deg, #ff6a3d, #ff8260);
+  color: #0b0b0d;
+  box-shadow: 0 12px 30px rgba(255, 100, 52, 0.35);
+}
 
-
-
-
+.orientation-option:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 
