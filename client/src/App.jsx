@@ -3,16 +3,16 @@ import axios from 'axios'
 import './App.css'
 
 const RATIO_OPTIONS = [
-  { id: '1.56-1', label: '1.56 : 1', width: 1.56, height: 1 },
-  { id: '3.23-1', label: '3.23 : 1', width: 3.23, height: 1 },
-  { id: '1.84-1', label: '1.84 : 1', width: 1.84, height: 1 },
-  { id: '1-2.73', label: '1 : 2.73', width: 1, height: 2.73 },
-  { id: '3.44-1', label: '3.44 : 1', width: 3.44, height: 1 },
-  { id: '2.85-1', label: '2.85 : 1', width: 2.85, height: 1 },
-  { id: '4.84-1', label: '4.84 : 1', width: 4.84, height: 1 },
-  { id: '2.19-1', label: '2.19 : 1', width: 2.19, height: 1 },
-  { id: '1-1.55', label: '1 : 1.55', width: 1, height: 1.55 },
   { id: '1-1', label: '1 : 1', width: 1, height: 1 },
+  { id: '1.55-1', label: '1.55 : 1', width: 1.55, height: 1 },
+  { id: '1.56-1', label: '1.56 : 1', width: 1.56, height: 1 },
+  { id: '1.84-1', label: '1.84 : 1', width: 1.84, height: 1 },
+  { id: '2.19-1', label: '2.19 : 1', width: 2.19, height: 1 },
+  { id: '2.73-1', label: '2.73 : 1', width: 2.73, height: 1 },
+  { id: '2.85-1', label: '2.85 : 1', width: 2.85, height: 1 },
+  { id: '3.23-1', label: '3.23 : 1', width: 3.23, height: 1 },
+  { id: '3.44-1', label: '3.44 : 1', width: 3.44, height: 1 },
+  { id: '4.84-1', label: '4.84 : 1', width: 4.84, height: 1 },
 ]
 
 const DEFAULT_PROMPT_HINT = 'Describe the ad you want to generate...'
