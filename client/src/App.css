@@ -424,8 +424,8 @@
 }
 
 .secondary-button {
-  background: transparent;
-  color: rgba(248, 250, 252, 0.8);
+  background: linear-gradient(90deg, rgba(36, 41, 56, 0.5), rgba(6, 8, 14, 0.5));
+  color: rgba(255, 255, 255, 0.85);
   border: 1px solid rgba(255, 100, 52, 0.55);
 }
 
@@ -511,6 +511,7 @@
     justify-content: center;
   }
 }
+
 
 
 
