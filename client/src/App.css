@@ -162,7 +162,7 @@
   border: 1px solid rgba(255, 100, 52, 0.25);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
 }
 
 .selector-trigger {
@@ -182,7 +182,7 @@
   justify-content: space-between;
   gap: 1rem;
   cursor: pointer;
-  z-index: 1;
+  z-index: 0;
 }
 
 .selector-trigger::before {
@@ -562,4 +562,6 @@
   cursor: not-allowed;
   box-shadow: none;
 }
+
+
 
