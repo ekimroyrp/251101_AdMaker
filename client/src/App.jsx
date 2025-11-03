@@ -114,11 +114,17 @@ function App() {
     setImageUrl('')
 
     try {
-      const response = await axios.post('/api/generate-image', {
-        prompt: requestPrompt,
-        width: orientedDimensions.width,
-        height: orientedDimensions.height,
-        label: orientedLabel,
+      const formData = new FormData()
+      formData.append('prompt', requestPrompt)
+      formData.append('width', orientedDimensions.width.toString())
+      formData.append('height', orientedDimensions.height.toString())
+      formData.append('label', orientedLabel)
+      if (referenceImage) {
+        formData.append('referenceImage', referenceImage, referenceImage.name)
+      }
+
+      const response = await axios.post('/api/generate-image', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       })
 
       const url = response.data?.imageUrl
@@ -373,6 +379,7 @@ function App() {
 }
 
 export default App
+
 
 
 

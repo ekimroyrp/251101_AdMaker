@@ -2,10 +2,15 @@ import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import OpenAI from 'openai'
+import multer from 'multer'
 
 dotenv.config()
 
 const app = express()
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 6 * 1024 * 1024 },
+})
 
 const port = process.env.PORT || 5000
 const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173'
@@ -40,13 +45,15 @@ app.use(
   }),
 )
 app.use(express.json({ limit: '1mb' }))
+app.use(express.urlencoded({ extended: true }))
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' })
 })
 
-app.post('/api/generate-image', async (req, res) => {
+app.post('/api/generate-image', upload.single('referenceImage'), async (req, res) => {
   const { prompt, width, height, label } = req.body ?? {}
+  const referenceImage = req.file
 
   if (!apiKey) {
     return res.status(500).json({ error: 'Server is not configured with an OpenAI API key.' })
@@ -56,6 +63,10 @@ app.post('/api/generate-image', async (req, res) => {
     return res.status(400).json({ error: 'Prompt is required.' })
   }
 
+  if (referenceImage && !referenceImage.mimetype?.startsWith('image/')) {
+    return res.status(400).json({ error: 'Reference upload must be an image.' })
+  }
+
   const size = deriveSizeFromRatio(width, height)
 
   if (!size) {
@@ -63,11 +74,28 @@ app.post('/api/generate-image', async (req, res) => {
   }
 
   try {
-    const response = await openai.images.generate({
-      model: 'gpt-image-1',
-      prompt: prompt.trim(),
-      size,
-    })
+    let response
+
+    if (referenceImage?.buffer?.length) {
+      const file = new File(
+        [referenceImage.buffer],
+        referenceImage.originalname || 'reference.png',
+        { type: referenceImage.mimetype || 'image/png' },
+      )
+
+      response = await openai.images.edit({
+        model: 'gpt-image-1',
+        prompt: prompt.trim(),
+        image: file,
+        size,
+      })
+    } else {
+      response = await openai.images.generate({
+        model: 'gpt-image-1',
+        prompt: prompt.trim(),
+        size,
+      })
+    }
 
     const image = response.data?.[0]
     const base64 = image?.b64_json
@@ -91,3 +119,8 @@ app.post('/api/generate-image', async (req, res) => {
 app.listen(port, () => {
   console.log(`Image generation server listening on http://localhost:${port}`)
 })
+
+
+
+
+
