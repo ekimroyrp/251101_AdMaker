@@ -127,6 +127,7 @@
 
 .selector-shell {
   position: relative;
+  z-index: 15;
   border-radius: 1.6rem;
   overflow: visible;
   border: 1px solid rgba(255, 100, 52, 0.55);
@@ -292,7 +293,7 @@
   transform: translateY(10px);
   pointer-events: none;
   transition: opacity 0.25s ease, transform 0.25s ease;
-  z-index: 5;
+  z-index: 25;
 }
 
 .selector-menu.is-open {
@@ -583,9 +584,6 @@
 
 
 
-
-
-
 .orientation-toggle {
   display: flex;
   gap: 0.55rem;
@@ -625,6 +623,9 @@
   cursor: not-allowed;
   box-shadow: none;
 }
+
+
+
 
 
 
