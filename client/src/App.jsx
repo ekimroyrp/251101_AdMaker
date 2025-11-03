@@ -43,8 +43,12 @@ function App() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [orientation, setOrientation] = useState('landscape')
+  const [referenceImage, setReferenceImage] = useState(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [lastPrompt, setLastPrompt] = useState('')
+
+  const dropdownRef = useRef(null)
+  const fileInputRef = useRef(null)
 
   const selectedRatio = useMemo(
     () => RATIO_OPTIONS.find((ratio) => ratio.id === selectedRatioId) ?? RATIO_OPTIONS[0],
@@ -75,6 +79,25 @@ function App() {
     const ratio = orientedDimensions.height / orientedDimensions.width
     return `${ratio * 100}%`
   }, [orientedDimensions])
+
+  const handleReferenceImageButton = () => {
+    if (isLoading) {
+      return
+    }
+    fileInputRef.current?.click()
+  }
+
+  const handleReferenceImageChange = (event) => {
+    const file = event.target.files?.[0] ?? null
+    setReferenceImage(file)
+  }
+
+  const clearReferenceImage = () => {
+    setReferenceImage(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
 
   const handleGenerate = async (event) => {
     event.preventDefault()
@@ -121,12 +144,11 @@ function App() {
     setImageUrl('')
     setError('')
     setLastPrompt('')
+    clearReferenceImage()
   }
 
   const effectivePrompt = lastPrompt || prompt.trim()
   const downloadFileName = `${slugify(effectivePrompt)}.png`
-
-  const dropdownRef = useRef(null)
 
   useEffect(() => {
     if (isLoading) {
@@ -292,7 +314,36 @@ function App() {
                 rows={4}
                 disabled={isLoading}
               />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleReferenceImageChange}
+                style={{ display: 'none' }}
+              />
+              <button
+                type="button"
+                className={`prompt-upload-button ${referenceImage ? 'has-image' : ''}`}
+                onClick={handleReferenceImageButton}
+                aria-label={referenceImage ? 'Change reference image' : 'Attach reference image'}
+                disabled={isLoading}
+              >
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M12 5a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2h-5v5a1 1 0 1 1-2 0v-5H6a1 1 0 0 1 0-2h5V6a1 1 0 0 1 1-1Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
             </div>
+            {referenceImage && (
+              <p className="prompt-upload-info">
+                <span>{referenceImage.name}</span>
+                <button type="button" onClick={clearReferenceImage}>
+                  Remove
+                </button>
+              </p>
+            )}
           </div>
 
           {error && <p className="error-text">{error}</p>}
