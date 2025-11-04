@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import axios from 'axios'
 import './App.css'
 
+const API_BASE_URL = import.meta.env.DEV ? '/api' : 'https://two51101-admaker.onrender.com/api'
+
 const RATIO_OPTIONS = [
   { id: '1-1', label: '1 : 1', width: 1, height: 1 },
   { id: '1.55-1', label: '1.55 : 1', width: 1.55, height: 1 },
@@ -123,7 +125,7 @@ function App() {
         formData.append('referenceImage', referenceImage, referenceImage.name)
       }
 
-      const response = await axios.post('/api/generate-image', formData, {
+      const response = await axios.post(API_BASE_URL + '/generate-image', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
 
