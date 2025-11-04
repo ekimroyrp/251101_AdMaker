@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import OpenAI from 'openai'
 import multer from 'multer'
+import { File } from 'node:buffer'
 
 dotenv.config()
 
@@ -13,7 +14,11 @@ const upload = multer({
 })
 
 const port = process.env.PORT || 5000
-const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173'
+const rawOrigins = process.env.CLIENT_ORIGIN || 'http://localhost:5173'
+const allowedOrigins = rawOrigins
+  .split(',')
+  .map((value) => value.trim())
+  .filter(Boolean)
 const apiKey = process.env.OPENAI_API_KEY
 
 if (!apiKey) {
@@ -41,7 +46,13 @@ const deriveSizeFromRatio = (rawWidth, rawHeight) => {
 
 app.use(
   cors({
-    origin: clientOrigin,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true)
+      }
+
+      return callback(new Error(`Origin "${origin}" is not allowed by CORS.`))
+    },
   }),
 )
 app.use(express.json({ limit: '1mb' }))
@@ -119,8 +130,3 @@ app.post('/api/generate-image', upload.single('referenceImage'), async (req, res
 app.listen(port, () => {
   console.log(`Image generation server listening on http://localhost:${port}`)
 })
-
-
-
-
-
