@@ -39,6 +39,9 @@ const formatDimension = (value) => {
 }
 
 function App() {
+  useEffect(() => {
+    document.title = '251101_AdMaker'
+  }, [])
   const [selectedRatioId, setSelectedRatioId] = useState(RATIO_OPTIONS[0].id)
   const [prompt, setPrompt] = useState('')
   const [imageUrl, setImageUrl] = useState('')
